@@ -1,8 +1,23 @@
 
 INSTALLATION:
-	requires mwclient
-	requires ~/.mwclient/config.py
-	
+ * requires mwclient module
+	Either in the PYTHONPATH or the current directory
+	You can check out a copy in the current directory with this command:
+    	svn co https://mwclient.svn.sourceforge.net/svnroot/mwclient/trunk/mwclient"
+    
+ * requires ~/.mwclient/config.py
+    You need to create a configuration file with information about
+    the wiki you're connecting to and you local environment.
+    mkdir ~/.mwclient/
+
+    cat > ~/.mwclient/config.py	
+	site='mysite.com'
+	path='/w/'
+	username='mybots_username'
+	password='mybots_password'
+	editor="mate -w"
+	^D
+		
 USAGE:
 	example of running a query and parsing the results
 		python query.py

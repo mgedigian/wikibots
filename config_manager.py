@@ -14,7 +14,7 @@ except ImportError, e:
     print "Couldn't find mwclient"
     print "If you already have it, add it to your python path"
     print "else check it out in this directory with:"
-    print "\tsvn co https://mwclient.svn.sourceforge.net/svnroot/mwclient"
+    print "\tsvn co https://mwclient.svn.sourceforge.net/svnroot/mwclient/trunk/mwclient"
     sys.exit()
 
 configfile = '~/.mwclient/config.py'
