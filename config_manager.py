@@ -22,15 +22,19 @@ sys.path.append(os.path.dirname(os.path.expanduser(configfile)))
 try:
     import config
 except ImportError, e:
-    print "Create config file (%s), containing:" % configfile
-    print "\tsite='www.sitename.com'"
-    print "\tpath='/w/'                          # (default)"
-    print "\tusername='username'"
-    print "\tpassname='password'"
-    print "\teditor = 'mate -w'"
-    print "\teditor_filename_extension = '.wiki' # (default)"
-    print "\teditor_encoding = 'utf-8'           # (default)"
-    print "\tconsole_encoding = 'utf-8'          # (default)"
+    
+    print "Could not locate config file (%s)" % configfile
+    print "mkdir %s " % os.path.dirname(os.path.expanduser(configfile))
+    print "create file (%s) with the desired site and user information:" % configfile
+    print
+    print "site='www.sitename.com'             # fill this in as appropriate"
+    print "path='/w/'                          # (default)"
+    print "username='username'                 # fill this in as appropriate"
+    print "password='password'                 # fill this in as appropriate"
+    print "editor = 'mate -w'"
+    print "editor_filename_extension = '.wiki' # (default)"
+    print "editor_encoding = 'utf-8'           # (default)"
+    print "console_encoding = 'utf-8'          # (default)"
     sys.exit()
 
 defaults = { "editor_encoding":"utf-8", "console_encoding":"utf-8", "path":"/w/", "editor_filename_extension":".wiki" }
