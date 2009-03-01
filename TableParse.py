@@ -54,7 +54,6 @@ def parse(string, head=None, cleaner=clean):
     A function to cleanup the HTML may be specified if you don't like
     the behavior of the original one.  It will return a list of lists."""
     newtbl = []
-    print "Findall in", str(type(string))
     tbls = tbl.findall(string)
     for t in tbls:
         header = [cleaner(h) for h in hdr.findall(t)]
