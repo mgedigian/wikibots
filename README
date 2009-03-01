@@ -17,6 +17,12 @@ INSTALLATION:
 	password='mybots_password'
 	editor="mate -w"
 	^D
+
+ * if you want to do text-to-speech, run the following after checking out the project
+   to get the tts files
+
+	git submodule init
+	git submodule update
 		
 USAGE:
 	example of running a query and parsing the results

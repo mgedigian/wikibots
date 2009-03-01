@@ -95,9 +95,6 @@ if __name__ == '__main__':
         m_filename_mp3 = article.replace(" ", "_") + ".mp3"
         if requires_tts(summary, m_filename_txt):
             print "\tUpdating summary"
-            # m_text = open("tts/" + m_filename_txt, "w")
-            # m_text.write(summary + "\n")
-            # m_text.close()
             out = file( "tts/" + m_filename_txt, "w" )
             out.write( codecs.BOM_UTF8 )
             out.write( summary.encode( "utf-8" ) )
@@ -107,6 +104,7 @@ if __name__ == '__main__':
             print "\tUploading mp3"
             if (os.path.exists('tts/%s' % m_filename_mp3)):
                 print "python upload.py -keep -noverify \"tts/%s\"" % m_filename_mp3
+                # mwclient can only upload images, not audio files
                 # site.upload(open('tts/%s' % m_filename_mp3), m_filename_mp3, '%s summary audio' % article, ignore=True)
             else:
                 print "*\tERROR creating mp3, upload skipped"
