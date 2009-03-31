@@ -18,22 +18,26 @@ class Query(object):
             self.site  = mwclient.Site(config.get("site"), path=config.get("path"))
             self.site.login(config.get("username"),config.get("password"))
         else:
-            self.site = site    
-        self.opts = opts;
-        if opts:
-            query_parts = query.split("}}")
-            self.query = query_parts[0] + " | " + " | ".join(k + "=" + str(v) for k,v in opts.items()) + "}}" + query_parts[1]
-
+            self.site = site
+        if not opts:
+            self.opts = {}
+        else:
+            self.opts = opts;
+        if not "format" in self.opts:
+            self.opts["format"] = "html"
+        query_parts = query.split("}}")
+        self.query = query_parts[0] + " | " + " | ".join(k + "=" + str(v) for k,v in self.opts.items()) + "}}" + query_parts[1]
+        
     def execute(self):
         if verbose:
             print "Parsing query:", self.query
         results = self.site.parse(self.query)
-        if self.opts["format"].lower() == "csv":
-            result = results
-        else:
+        if self.opts["format"].lower() == "html":
             result = results['text']['*']
             if verbose:
                 print "Got html", result.encode("utf-8")
+        else:
+            result = results
         return result
 
     def result_lol(self):
