@@ -5,6 +5,13 @@ config_manager.py
 
 Created by Matt on 2009-02-22.
 Copyright (c) 2009 Matt Gedigian. All rights reserved.
+
+Upon import, this reads config from default location.
+Then it is used by calling "get()" for particular keys
+
+TODO: offer to create file if not found
+TODO: allow mock structure for testing
+
 """
 import os, sys
 sys.path.append('mwclient') # or wherever you put it
@@ -17,12 +24,15 @@ except ImportError, e:
     print "\tsvn co https://mwclient.svn.sourceforge.net/svnroot/mwclient/trunk/mwclient"
     sys.exit()
 
+class InvalidKeyException(Exception):
+    def __init__(self, msg):
+        self.msg = msg
+
 configfile = '~/.mwclient/config.py'
 sys.path.append(os.path.dirname(os.path.expanduser(configfile)))
 try:
     import config
 except ImportError, e:
-    
     print "Could not locate config file (%s)" % configfile
     print "mkdir %s " % os.path.dirname(os.path.expanduser(configfile))
     print "create file (%s) with the desired site and user information:" % configfile
@@ -49,7 +59,7 @@ def get(key):
     elif key in defaults:
         return defaults[key]
     else:
-        raise Exception("No value for '%s'" % key)
+        raise InvalidKeyException("No value for '%s'" % key)
         
 # if not config.path[-1] == "/":
 #     config.path = config.path + "/"
