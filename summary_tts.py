@@ -1,3 +1,6 @@
+"""
+This gets query results as HTML tables, rather than CSV
+"""
 import query as query_module
 import os
 import config_manager as config
@@ -29,21 +32,22 @@ def _cmd(output, dir, *cmditems):
             output.write(line)
     return child.wait()
 
-def requires_tts(str, txt_file):
-    if (os.path.exists("tts/" + txt_file)):
-        # f = open("tts/" + txt_file, "r")
-        # contents = " ".join(f.readlines())
-        f = codecs.open("tts/" + txt_file, "r", "utf-8" )
+def requires_tts(str, directory, txt_file):
+    """ Test whether contents of txt_file match that of str, or if they are out of date
+        If stale, the existing file is moved out of the way
+    """
+    if (os.path.exists(directory + os.sep + txt_file)):
+        f = codecs.open(directory + os.sep + txt_file, "r", "utf-8" )
         contents = f.read() # Returns a Unicode string from the UTF-8 bytes in the file
         f.close()
         if (str.strip() == contents.strip()):
-            print "\tExisting summary audio"
+            print "\tExisting audio is current"
             return False
         else:
-            print "\tExisting summary audio is out of date"
+            print "\tExisting audio is stale"
             print "\t" + contents.strip()
             print "\t" + str.strip()
-            os.rename("tts/" + txt_file, "tts/" + txt_file + ".bak")
+            os.rename(directory + os.sep + txt_file, directory + os.sep + txt_file + ".bak")
     return True
 
 def tts(str, m_filename_txt, m_filename_mp3):
@@ -71,8 +75,8 @@ def prepend(article, top_text, site):
         page.save(new_text, summary = 'Prepended')
     else:
         print "No change to", article
-    
-if __name__ == '__main__':
+
+def main():
     print "Connecting as %s to http://%s%s" % (config.get("username"), config.get("site"), config.get("path"))
     site  = mwclient.Site(config.get("site"), path=config.get("path"))
     site.login(config.get("username"),config.get("password"))
@@ -93,7 +97,7 @@ if __name__ == '__main__':
         print "Processing", article
         m_filename_txt = article.replace(" ", "_") + ".txt"
         m_filename_mp3 = article.replace(" ", "_") + ".mp3"
-        if requires_tts(summary, m_filename_txt):
+        if requires_tts(summary, "tts", m_filename_txt):
             print "\tUpdating summary"
             out = file( "tts/" + m_filename_txt, "w" )
             out.write( codecs.BOM_UTF8 )
@@ -113,3 +117,6 @@ if __name__ == '__main__':
         else:
             print "\tAdding audio template to link the audio file"
             prepend(article, "{{Audio|Summary|%s}}" % m_filename_mp3, site)
+    
+if __name__ == '__main__':
+    main()
