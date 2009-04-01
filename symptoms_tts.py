@@ -90,6 +90,5 @@ def main(args=None):
     for disease, symptoms in disease_dict.items():
         read_into_files(symptoms, disease + '_symptoms')
 
-
 if __name__ == '__main__':
 	main()

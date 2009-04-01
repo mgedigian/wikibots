@@ -1,10 +1,16 @@
-import os
-import sys
-import config_manager as config
-import client as mwclient
+import csv
 import getopt
+import os
+import re
+import sys
+import urllib
+from tempfile import NamedTemporaryFile
+
+import config_manager
+import client as mwclient
 
 verbose = False
+config = config_manager.load()
 
 class Usage(Exception):
     def __init__(self, msg):
@@ -36,12 +42,34 @@ class Query(object):
             result = results['text']['*']
             if verbose:
                 print "Got html", result.encode("utf-8")
+        elif self.opts["format"].lower() == "csv":
+        	long_string = results['text']['*']
+
+            # extract the title from the result (starts with "title=" and ends with """)
+        	my_regex = " title=\"(.*?)\""  
+        	match = re.search(my_regex,long_string)
+        	title = match.groups()[0]
+        	try:
+        	    url_path = config.get("urlpath")
+        	except config_manager.InvalidKeyException:
+        	    url_path = config.get("path")
+        	url = 'http://' + config.get("site") + url_path + title
+
+            # write the csv file to disk ("CSV.txt")
+        	f = urllib.urlopen(url) 
+            # local_file = open('CSV.txt', 'w') #trying to create a file called csv but doesn't work...
+        	local_file = NamedTemporaryFile()
+        	local_file.write(f.read()) 
+        	local_file_reader = open(local_file.name , 'r')
+        	local_file.close()
+
+
+            # read the csv file from disk
+            # fileReader = csv.reader(open ('CSV.txt' , 'r'), delimiter=',', quotechar='"')
+        	result = csv.reader(local_file_reader, delimiter=',', quotechar='"')
         else:
             result = results
         return result
-
-    def result_lol(self):
-        return self.lol
         
 
 def html2lol(html):
@@ -49,8 +77,19 @@ def html2lol(html):
     lol = TableParse.parse(html)
     if verbose:
         print "Parsed return", str(type(lol)), 'of length', len(lol)
-    for l in lol:
-        print "\t\t".join(l) + "\n"
+    return lol
+    # for l in lol:
+    #     print "\t\t".join(l) + "\n"
+
+def lol2dict(lol, single_item = False):
+    dictionary = {}
+    for item in lol:
+        if len(item) >= 2:
+            if single_item:
+                dictionary[item[0]] = item[1]
+            else:
+                dictionary[item[0]] = item[1:]
+    return dictionary
     
 def main(argv=None):
     if argv is None:
@@ -92,14 +131,12 @@ def main(argv=None):
 
         opts = {"limit":limit, "format":format}
         q = Query(query, opts)
+        print q.query
         result = q.execute();
         if reformat_html:
             html2lol(result)
         else:
             print result.encode("utf-8")
-        # summary_dict = q.result_dict()
-        # for article,summary in summary_dict.items():
-        #     print article + ":\n  " + summary + "\n"
     except Usage, err:
         print >> sys.stderr, sys.argv[0].split("/")[-1] + ": " + str(err.msg)
         print >> sys.stderr, "\t for help use --help"
